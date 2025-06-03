@@ -3,10 +3,11 @@ import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
 from aiogram import F
-from config import BOT_TOKEN,ADMINS
+from config import BOT_TOKEN,ADMINS,MY_CHANNEL
 from keyboard_buttons import menu_button
 from aiogram.fsm.context import FSMContext
 from mystate import Elon
+from inline_buttons import elon_btn
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
@@ -51,11 +52,25 @@ async def elon_phone_number(message: types.Message,state: FSMContext):
     image = data.get("image")
     price = data.get("price")
     phone_number = message.text
-    text = f"Model: {phone_model}\nNarxi: {price}\n Murojaat uchun tel: {phone_number}"
-    await message.answer_photo(photo=image,caption=text,reply_markup=menu_button)
- 
+    text = f"Model: {phone_model}\nNarxi: {price}\nMurojaat uchun tel: {phone_number}"
+    await message.answer("Sizning Eloningiz Adminga yuborildi!!!",reply_markup=menu_button)
+    await bot.send_photo(chat_id=ADMINS[0],photo=image,caption=text,reply_markup=elon_btn)
     await state.clear()
 
+
+@dp.callback_query(F.data == "1")
+async def elon_ber(callback: types.CallbackQuery):
+    photo = callback.message.photo[-1].file_id
+    text = callback.message.caption
+    await bot.send_photo(chat_id=MY_CHANNEL,photo=photo,caption=text)
+    await callback.answer("Kanalga joylandi 🔥")
+    await callback.message.delete()
+
+
+@dp.callback_query(F.data == "0")
+async def elon_ber(callback: types.CallbackQuery):
+    await callback.answer("Elon o'chirildi 🔥")
+    await callback.message.delete()
 
 async def main():
     await dp.start_polling(bot)
