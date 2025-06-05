@@ -27,7 +27,7 @@ async def elon_post(message: types.Message,state: FSMContext):
 async def elon_model(message: types.Message,state: FSMContext):
     ph_model = message.text
     await state.update_data(phone_model = ph_model)
-    await message.answer("Rasmini yuboring..")
+    await message.answer("Rasmini yuboring...")
     await state.set_state(Elon.image)
 
 @dp.message(F.photo,Elon.image)
